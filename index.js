@@ -465,10 +465,10 @@ module.exports = function (userOptions) {
       // Данные, которые идут в gulp файле для сборки
       var contentObj = eval(String(fileContents)).toMerge
 
-          // Sass компилятор подключаем так криво, данность архитектуры :(
+      // Sass компилятор подключаем так криво, данность архитектуры :(
       var sassCompiler = require('/www/app/node_modules/gulp-sass/node_modules/node-sass')
 
-          // Результат компиляции
+      // Результат компиляции
       var compilerResult = null
 
           // console.log(sassBuffer);
