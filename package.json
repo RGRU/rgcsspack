@@ -1,18 +1,18 @@
 {
   "name": "gulp-rgcsspack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CSS Plugin for Gulp from rg.ru developers",
+  "author": {
+    "name": "RGRU team | nanomen <dev@rg.ru> (https://github.com/RGRU/)"
+  },
   "keywords": [
     "gulpplugin",
+    "gulp-rgswig",
     "swig"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nanomen/gulp-rgcsspack.git"
-  },
-  "author": {
-    "name": "RG team",
-    "email": "dev@rg.ru"
+    "url": "git+https://github.com/RGRU/rgcsspack.git"
   },
   "dependencies": {
     "event-stream": "~3.0.15",
@@ -27,6 +27,6 @@
     "node": ">= 0.4.0"
   },
   "bugs": {
-    "url": "https://github.com/nanomen/gulp-rgcsspack/issues"
+    "url": "https://github.com/RGRU/rgcsspack/issues"
   }
 }
