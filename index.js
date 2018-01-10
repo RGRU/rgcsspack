@@ -69,7 +69,7 @@ var findCrossData = function (dirPath) {
   var targetFile = null
 
   // Маска пути до файла с общими данными
-  var crossData = '/crosspages/page.js'
+  var crossData = '/includes/page.js'
 
   /**
    * Функции помощники
@@ -139,8 +139,8 @@ var findCrossData = function (dirPath) {
       // #3 Перенастраиваем папку, еще на два уровня выше
       // это конечная папка, если в ней нет данных, то их нет больше нигде
       // сохраняя перед этим путь в переменную
-      targetDir = parentDir(parentDir(targetDir))
-      targetFile = `${targetDir}/data${crossData}`
+      targetDir = parentDir(parentDir(parentDir(targetDir)))
+      targetFile = `${targetDir}/pages/data${crossData}`
 
       // #3.1 Ищем файл по этому пути
       if (resExistsSync(targetFile)) {
@@ -183,49 +183,13 @@ module.exports = function (userOptions) {
         common: 'common',
 
         // Глобальные стили
-        global: {
-
-          // Нормализация
-          normalize: 'global/normalize',
-
-          // Инструменты
-          instruments: 'global/instruments',
-
-          // Глобальные стили элементов
-          elements: 'global/elements',
-
-          // Модификаторы для блоков и элементов
-          modify: 'global/modify'
-
-        },
+        global: {},
 
         // Стили разметки
-        layout: {
-
-          // Основная страница
-          page: 'layouts/l-page',
-
-          // Боковой блок
-          aside: 'layouts/l-aside'
-
-        },
+        layout: {},
 
         // Кастомизация вендоров
-        vendors: {
-
-          // Версия для печати
-          print: 'global/print',
-
-          // Colorbox
-          colorbox: 'vendors/vendor.colorbox.custom',
-
-          // Scrollbar
-          scrollbar: 'vendors/vendor.scrollbar.custom',
-
-          // Fotorama
-          fotorama: 'vendors/vendor.fotorama.custom'
-
-        }
+        vendors: {}
 
       }
 
@@ -466,7 +430,7 @@ module.exports = function (userOptions) {
       var contentObj = eval(String(fileContents)).toMerge
 
       // Sass компилятор
-      var sassCompiler = require('node-sass'),
+      var sassCompiler = require('node-sass')
 
       // Результат компиляции
       var compilerResult = null
