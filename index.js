@@ -466,7 +466,8 @@ module.exports = function (userOptions) {
       var contentObj = eval(String(fileContents)).toMerge
 
       // Sass компилятор подключаем так криво, данность архитектуры :(
-      var sassCompiler = require('/www/app/node_modules/gulp-sass/node_modules/node-sass')
+      // require('/www/app/node_modules/gulp-sass/node_modules/node-sass')
+      var sassCompiler = require('node-sass')
 
       // Результат компиляции
       var compilerResult = null
