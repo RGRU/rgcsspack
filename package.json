@@ -1,6 +1,6 @@
 {
   "name": "gulp-rgcsspack",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "description": "CSS Plugin for Gulp from rg.ru developers",
   "author": {
     "name": "RGRU team | nanomen <dev@rg.ru> (https://github.com/RGRU/)"
