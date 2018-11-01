@@ -18,6 +18,10 @@
  *
  */
 
+// Нормализация слешей в unix
+const __pathDelimeter__ = '/'
+const normalizeDelimeter = str => str.replace(/\\+/g, __pathDelimeter__)
+
 // Для работы с файлами, путями, cli
 const fs = require('fs')
 const path = require('path')
@@ -63,13 +67,14 @@ _.extend = extendify({
 var findCrossData = function (dirPath) {
   // Сохраняем путь до дирректории в локальной переменной
   // Нужно для того, чтобы перезаписывать путь, если нам придется идти на уровни выше
-  var targetDir = dirPath
+  // Попутно нормализуя слеши для разных операционных систем
+  var targetDir = normalizeDelimeter(dirPath)
 
   // Путь до файла с общими данными (будет ставится значение во время работы функции)
   var targetFile = null
 
   // Маска пути до файла с общими данными
-  var crossData = '/crosspages/page.js'
+  var crossData = `${__pathDelimeter__}crosspages${__pathDelimeter__}page.js`
 
   /**
    * Функции помощники
@@ -99,7 +104,7 @@ var findCrossData = function (dirPath) {
    * @return {String} путь на уровень выше
    */
   var parentDir = function (path) {
-    return path.split('/').slice(0, -1).join('/')
+    return path.split(__pathDelimeter__).slice(0, -1).join(__pathDelimeter__)
   }
 
   /**
@@ -140,7 +145,7 @@ var findCrossData = function (dirPath) {
       // это конечная папка, если в ней нет данных, то их нет больше нигде
       // сохраняя перед этим путь в переменную
       targetDir = parentDir(parentDir(targetDir))
-      targetFile = `${targetDir}/data${crossData}`
+      targetFile = `${targetDir}${__pathDelimeter__}data${crossData}`
 
       // #3.1 Ищем файл по этому пути
       if (resExistsSync(targetFile)) {
@@ -162,10 +167,10 @@ var findCrossData = function (dirPath) {
 module.exports = function (userOptions) {
   'use strict'
 
-    /*
-     * Настраиваем необходимые свойства
-     *
-     */
+  /*
+   * Настраиваем необходимые свойства
+   *
+   */
 
   var
 
@@ -186,16 +191,16 @@ module.exports = function (userOptions) {
         global: {
 
           // Нормализация
-          normalize: 'global/normalize',
+          normalize: `global${__pathDelimeter__}normalize`,
 
           // Инструменты
-          instruments: 'global/instruments',
+          instruments: `global${__pathDelimeter__}instruments`,
 
           // Глобальные стили элементов
-          elements: 'global/elements',
+          elements: `global${__pathDelimeter__}elements`,
 
           // Модификаторы для блоков и элементов
-          modify: 'global/modify'
+          modify: `global${__pathDelimeter__}modify`
 
         },
 
@@ -203,10 +208,10 @@ module.exports = function (userOptions) {
         layout: {
 
           // Основная страница
-          page: 'layouts/l-page',
+          page: `layouts${__pathDelimeter__}l-page`,
 
           // Боковой блок
-          aside: 'layouts/l-aside'
+          aside: `layouts${__pathDelimeter__}l-aside`
 
         },
 
@@ -214,16 +219,16 @@ module.exports = function (userOptions) {
         vendors: {
 
           // Версия для печати
-          print: 'global/print',
+          print: `global${__pathDelimeter__}print`,
 
           // Colorbox
-          colorbox: 'vendors/vendor.colorbox.custom',
+          colorbox: `vendors${__pathDelimeter__}vendor.colorbox.custom`,
 
           // Scrollbar
-          scrollbar: 'vendors/vendor.scrollbar.custom',
+          scrollbar: `vendors${__pathDelimeter__}vendor.scrollbar.custom`,
 
           // Fotorama
-          fotorama: 'vendors/vendor.fotorama.custom'
+          fotorama: `vendors${__pathDelimeter__}vendor.fotorama.custom`
 
         }
 
@@ -234,14 +239,14 @@ module.exports = function (userOptions) {
   // Обновляем стандартные опции с пользовательскими
   _.extend(options, userOptions)
 
-    /**
-     *
-     * Функция плагина, которая принимает файловый поток в pipe
-     * @param  {Buffer} file файл, который передается в gulp потоке
-     * @param  {Function} callback функция обратного вызова
-     * @return {Buffer} отправляем преобразованный файл дальше в потоке
-     *
-     */
+  /**
+   *
+   * Функция плагина, которая принимает файловый поток в pipe
+   * @param  {Buffer} file файл, который передается в gulp потоке
+   * @param  {Function} callback функция обратного вызова
+   * @return {Buffer} отправляем преобразованный файл дальше в потоке
+   *
+   */
   var rgcsspack = function (file, callback) {
     // Корневая дирректория проекта
     var rootPath = getRootPath(file.path)
@@ -321,7 +326,7 @@ module.exports = function (userOptions) {
      * @return {String} возвращаем определенный нами путь, до папки проекта
      *
      */
-    function getRootPath (filePath) {
+    function getRootPath(filePath) {
       return filePath.split('src')[0]
     }
 
@@ -334,7 +339,7 @@ module.exports = function (userOptions) {
      * @return {Boolean} возвращает true если это путь до кастомного стиля
      *
      */
-    function checkHasCustom (filePath) {
+    function checkHasCustom(filePath) {
       return /custom/.test(filePath)
     }
 
@@ -348,7 +353,7 @@ module.exports = function (userOptions) {
      *     встречаются в inline блоке, то удаляем их из блока файлов
      *
      */
-    function normalizeStyleMap () {
+    function normalizeStyleMap() {
       // Создаем копию списка стилей для файла
       let stylesToFileList = stylesMap.tofile.slice(0)
 
@@ -373,19 +378,19 @@ module.exports = function (userOptions) {
      * @return {String} возвращаем контент для создаваемого sass файла
      *
      */
-    function createSassBuffer (stylesType) {
+    function createSassBuffer(stylesType) {
       let stylesList = stylesMap[stylesType]
 
-          // Путь до папки со стилями
-      let stylesPath = rootPath + 'src/styles/'
+      // Путь до папки со стилями
+      let stylesPath = `${rootPath}src${__pathDelimeter__}styles${__pathDelimeter__}`
 
-          // Путь до папки исходников проекта
-      let srcPath = rootPath + 'src/'
+      // Путь до папки исходников проекта
+      let srcPath = `${rootPath}src${__pathDelimeter__}`
 
-          // Короткая запись до путей блоков
+      // Короткая запись до путей блоков
       let coreStyles = options.coreStyles
 
-          // Будущий контент файла
+      // Будущий контент файла
       let content = ''
 
       // Фильтруем, оставляя уникальные стили
@@ -455,13 +460,14 @@ module.exports = function (userOptions) {
         })
       }
 
-      return content
+      // Убираем намес из разных слешей
+      return normalizeDelimeter(content)
     }
 
     // Передаем в данные контент sass файла
     // чтобы можно было инлайном его обрабатывать дальше
     // в gulp потоке
-    function createInlineStyles (sassBuffer) {
+    function createInlineStyles(sassBuffer) {
       // Данные, которые идут в gulp файле для сборки
       var contentObj = eval(String(fileContents)).toMerge
 
@@ -471,8 +477,6 @@ module.exports = function (userOptions) {
 
       // Результат компиляции
       var compilerResult = null
-
-          // console.log(sassBuffer);
 
       // Компилируем стили
       compilerResult = sassCompiler.renderSync({
@@ -500,7 +504,7 @@ module.exports = function (userOptions) {
      * @return {Undefined} ничего не возвращаем
      *
      */
-    function findDeepKey (obj) {
+    function findDeepKey(obj) {
       // Проходим по объекту в поисках стилей
       // используем рекурсию
       // Важно понимать, что функция работает только под определенную структуру данных RGB системы
@@ -620,7 +624,7 @@ module.exports = function (userOptions) {
      * @return {Array} styles массив с найденными стилями
      *
      */
-    function pushToStyleList (stylesData) {
+    function pushToStyleList(stylesData) {
       // Куда будем добавлять стили
       var stylesTarget = null
 
@@ -701,7 +705,7 @@ module.exports = function (userOptions) {
      * @return {Undefined} ничего не возвращает
      *
      */
-    function writeFile (path, contents, callback) {
+    function writeFile(path, contents, callback) {
       // Используя модуль, создаем папки,
       // если они не были созданы ранее
       // Получаем названия всех папок которые нужно создать,
@@ -716,11 +720,11 @@ module.exports = function (userOptions) {
       })
     }
 
-      /**
-       *
-       * ОБработка потока
-       *
-       */
+    /**
+     *
+     * ОБработка потока
+     *
+     */
     try {
       // Получаем аргументы NODE процесса через minimist
       // Устанавливаем окружение
@@ -756,16 +760,6 @@ module.exports = function (userOptions) {
       // Передаем в данные информацию об окружении
       dataFile = _.extend({}, dataFile, { env: global.env })
 
-      // fs.writeFile('/www/app/branches/css/data_' + fileName + '.js', JSON.stringify(dataFile, false, '\t'), function(err) {
-
-      //     if (err) {
-      //         return console.log(err);
-      //     }
-
-      //     console.log("The file data was saved!");
-
-      // });
-
       /*
        *
        * Собираем файл из стилей,
@@ -777,10 +771,6 @@ module.exports = function (userOptions) {
       // Ищем стили у блоков
       // и заполняем ими массив стилей
       findDeepKey(dataFile)
-
-      // Фильтруем массив стилей,
-      // удаляя повторяущиеся пути
-      // stylesList = _.uniq(stylesList);
 
       // Сортируем стили и удаляем дубли,
       // что идут в инлайн и в файл
@@ -794,9 +784,6 @@ module.exports = function (userOptions) {
       // передавая в функцию массив со списком стилей
       sassBufferToInline = createSassBuffer('inline')
 
-      // console.log(sassBufferToFile);
-      // console.log(sassBufferToInline);
-
       // Создаем стили из sass файла
       // и добавляем их в данные файла
       createInlineStyles(sassBufferToInline)
@@ -807,56 +794,30 @@ module.exports = function (userOptions) {
        *
        */
 
-      // Устанавливаем путь, куда писать sass файл
-      // pathToSassFile = rootPath + 'src/styles/';
-
       // Устанавливаем папку, куда писать стили
       // в зависимости от окружения
       envDir = (global.env === 'dev') ? 'dest' : 'prod'
 
       // Устанавливаем путь временной папки,
       // куда писать sass файл
-      pathToTempSassFile = `${rootPath}temp/styles/`
+      pathToTempSassFile = `${rootPath}temp${__pathDelimeter__}styles${__pathDelimeter__}`
 
       // Устанавливаем путь, куда писать файл стилей
-      pathToStyleFile = `${rootPath}${envDir}/public/styles/`
+      pathToStyleFile = `${rootPath}${envDir}${__pathDelimeter__}public${__pathDelimeter__}styles${__pathDelimeter__}`
 
       // Если это кастомные файлы,
       // то изменяем пути
       if (checkHasCustom(filePath)) {
         // Устанавливаем путь, куда писать sass файл
-        // pathToSassFile = rootPath + 'src/styles' + filePath.match(/\/custom\/[a-z0-9_-]+\/[a-z0-9_-]+\//)[0];
 
         // Устанавливаем путь, куда писать временный sass файл
-        pathToTempSassFile = `${rootPath}temp/styles${filePath.match(/\/custom\/[a-z0-9_-]+\/[a-z0-9_-]+\//)[0]}`
+        // Попутно нормализуем слешщи путей
+        pathToTempSassFile = `${rootPath}temp${__pathDelimeter__}styles${normalizeDelimeter(filePath).match(/\/custom\/[a-z0-9_-]+\/[a-z0-9_-]+\//)[0]}`
 
         // Устанавливаем путь, куда писать файл стилей
-        pathToStyleFile = `${rootPath}${envDir}/public/styles${filePath.match(/\/custom\/[a-z0-9_-]+\/[a-z0-9_-]+\//)[0]}`
+        // Попутно нормализуем слешщи путей
+        pathToStyleFile = `${rootPath}${envDir}${__pathDelimeter__}public${__pathDelimeter__}styles${normalizeDelimeter(filePath).match(/\/custom\/[a-z0-9_-]+\/[a-z0-9_-]+\//)[0]}`
       }
-
-      // Записываем файл в дирректорию
-      // Либо в базовые стили, либо в кастомные
-      // fs.writeFile(pathToSassFile + fileName + '.sass', sassBufferToFile, function(err) {
-
-      //     if (err) {
-      //         return console.log(err);
-      //     }
-
-      //     // Файл создан
-      //     console.log('The file ' + pathToSassFile + fileName + '.sass was saved!');
-      //     console.log('The file ' + pathToStyleFile + fileName + '.css was saved!');
-
-      //     // Преобразуем sass файл в css,
-      //     // запуская gulp обработку
-      //     // Сохраняем в dest дирректорию
-      //     gulp
-      //         .src(pathToSassFile + fileName + '.sass')
-      //         .pipe(sass({
-      //             "outputStyle": "compressed"
-      //         }))
-      //         .pipe(gulp.dest(pathToStyleFile));
-
-      // });
 
       // Записываем файл во временную папку
       // temp folder
@@ -864,10 +825,6 @@ module.exports = function (userOptions) {
         if (err) {
           return console.log(err)
         }
-
-        // Файл создан
-        // console.log('The file ' + pathToTempSassFile + fileName + '.sass was saved!');
-        // console.log('The file ' + pathToStyleFile + fileName + '.css was saved!');
 
         // Преобразуем sass файл в css,
         // запуская gulp обработку
@@ -879,30 +836,6 @@ module.exports = function (userOptions) {
           }))
           .pipe(gulp.dest(pathToStyleFile))
       })
-
-      // Записываем файл во временную папку
-      // temp folder
-      // fs.writeFile(pathToTempSassFile + fileName + '.sass', sassBufferToFile, function(err) {
-
-      //     if (err) {
-      //         return console.log(err);
-      //     }
-
-      //     // Файл создан
-      //     console.log('The file ' + pathToTempSassFile + fileName + '.sass was saved!');
-      //     // console.log('The file ' + pathToStyleFile + fileName + '.css was saved!');
-
-      //     // Преобразуем sass файл в css,
-      //     // запуская gulp обработку
-      //     // Сохраняем в dest дирректорию
-      //     gulp
-      //         .src(pathToTempSassFile + fileName + '.sass')
-      //         .pipe(sass({
-      //             "outputStyle": "compressed"
-      //         }))
-      //         .pipe(gulp.dest(pathToStyleFile));
-
-      // });
 
       /*
        *
